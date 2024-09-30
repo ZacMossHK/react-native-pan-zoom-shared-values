@@ -1,8 +1,5 @@
 import Animated, {
-  SharedValue,
   useAnimatedStyle,
-  useDerivedValue,
-  useFrameCallback,
   useSharedValue,
 } from "react-native-reanimated";
 import {
@@ -11,7 +8,6 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { Matrix3, identity3, multiply3 } from "react-native-redash";
-import { Image, ImageSourcePropType } from "react-native";
 import { useState } from "react";
 import {
   Coordinates,
@@ -25,62 +21,14 @@ import {
   translateMatrix,
 } from "./helpers/matrixHelpers";
 import { imageContainerStyles } from "./styles";
-import ImageContainerProvider, {
-  useImageContainer,
-} from "./providers/ImageContainerProvider";
-
-// interface ImageContainerProps {
-//   isViewRendered: SharedValue<boolean>;
-//   translation: SharedValue<Coordinates>;
-//   pinchScale: SharedValue<number>;
-//   baseScale: SharedValue<number>;
-//   transform: SharedValue<Matrix3>;
-//   maxDistance: SharedValue<Coordinates>;
-//   imageMatrix: SharedValue<Matrix3>;
-//   origin: SharedValue<Coordinates>;
-//   setNodes: React.Dispatch<React.SetStateAction<Nodes>>;
-//   nodes: Nodes;
-//   viewportMeasurements: SizeDimensions;
-//   setViewportMeasurements: React.Dispatch<
-//     React.SetStateAction<SizeDimensions | null>
-//   >;
-//   isAnimating: SharedValue<boolean>;
-//   openBottomSheetHeight: SharedValue<number>;
-//   openBottomSheetScaleDownPositionAdjustmentY: SharedValue<number>;
-//   hasHitTopEdge: SharedValue<boolean>;
-//   imageHeight: number;
-//   imageWidth: number;
-//   isImageWiderThanView: boolean | null;
-//   selectedNodeIndex: SharedValue<number | null>;
-//   isPanning: SharedValue<boolean>;
-//   selectedSubNodeIndex: SharedValue<number | null>;
-//   selectedNodePosition: SharedValue<Coordinates | null>;
-// }
-
-const imageToAnimate =
-  "https://tobyroberts.co.uk/wp-content/uploads/2023/03/toby_roberts_world_cup_medal-1000.jpg";
-
-let dimensions = { width: 0, height: 0 };
-
-Image.getSize(imageToAnimate, (width, height) => {
-  dimensions.width = width;
-  dimensions.height = height;
-});
+import { useImageContainer } from "./providers/ImageContainerProvider";
 
 const ImageContainerManipulator = ({
   imageSrc,
   imageSource,
 }: ImageContainerManipulatorProps) => {
-  // inspired by https://github.com/software-mansion/react-native-gesture-handler/issues/2138#issuecomment-1231634779
-  // const {
-  //   origin,
-  //   transform,
-  //   pinchScale,
-  //   baseScale,
-  //   translation,
-  //   isPinching,
-  //   isPanning,getImageMatrix
-  //   // imageMatrix,
+  // with thanks to https://github.com/software-mansion/react-native-gesture-handler/issues/2138#issuecomment-1231634779
+  
   const {
     origin,
     translation,
@@ -91,34 +39,20 @@ const ImageContainerManipulator = ({
     isPanning,
     imageMatrix,
   } = useImageContainer();
-  // const origin = useSharedValue<Coordinates>({ x: 0, y: 0 });
-  // const transform = useSharedValue(identity3);
-  // const pinchScale = useSharedValue(1);
-  // const baseScale = useSharedValue(1);
-  // const translation = useSharedValue<Coordinates>({ x: 0, y: 0 });
+
   const maxDistance = useSharedValue<Coordinates>({ x: 0, y: 0 });
   const adjustedTranslationX = useSharedValue(0);
   const adjustedTranslationY = useSharedValue(0);
   const adjustedScale = useSharedValue(0);
-  // const isPinching = useSharedValue(false);
-  // const isPanning = useSharedValue(false);
-  // const imageMatrix = useSharedValue(identity3);
   const [viewportMeasurements, setViewportMeasurements] =
     useState<SizeDimensions>({
       width: 0,
       height: 0,
     });
-  // const imageMatrix = useDerivedValue(() =>
-  //   getMatrix(
-  //     {
-  //       x: translation.value.x,
-  //       y: translation.value.y,
-  //     },
-  //     origin.value,
-  //     pinchScale.value,
-  //     transform.value
-  //   )
-  // );
+  const [dimensions, setDimensions] = useState<SizeDimensions>({
+    width: 0,
+    height: 0,
+  });
 
   const imageHeight = viewportMeasurements.height
     ? viewportMeasurements.width * (dimensions.height / dimensions.width)
@@ -133,18 +67,6 @@ const ImageContainerManipulator = ({
     viewportMeasurements.height &&
     dimensions.width / dimensions.height >=
       viewportMeasurements.width / viewportMeasurements.height;
-
-  // useFrameCallback(() => {
-  //   imageMatrix.value = getMatrix(
-  //     {
-  //       x: translation.value.x,
-  //       y: translation.value.y,
-  //     },
-  //     origin.value,
-  //     pinchScale.value,
-  //     transform.value
-  //   );
-  // });
 
   const pinch = Gesture.Pinch()
     .onStart((event) => {
@@ -277,13 +199,16 @@ const ImageContainerManipulator = ({
         // this resets the transform at the edge if trying to pan outside of the image's boundaries
         newMatrix[2] = maxDistance.value.x * (transform.value[2] > 0 ? 1 : -1);
       }
+
       if (transform.value[5] > maxDistance.value.y) {
         newMatrix[5] = maxDistance.value.y;
       }
+
       if (Math.abs(transform.value[5]) > maxDistance.value.y) {
         // this resets the transform at the edge if trying to pan outside of the image's boundaries
         newMatrix[5] = maxDistance.value.y * (transform.value[5] > 0 ? 1 : -1);
       }
+      
       transform.value = newMatrix as unknown as Matrix3;
       return {}; // required to stop animatedStyle endlessly refreshing - possibly related to https://github.com/software-mansion/react-native-reanimated/issues/1767
     }
@@ -354,21 +279,17 @@ const ImageContainerManipulator = ({
           collapsable={false}
           style={imageContainerStyles.fullscreen}
         >
-          {imageSrc ? (
-            <Animated.Image
-              src={imageSrc}
-              resizeMode={"contain"}
-              style={[imageContainerStyles.fullscreen, animatedStyle]}
-              fadeDuration={0}
-            />
-          ) : (
-            <Animated.Image
-              source={imageSource}
-              resizeMode={"contain"}
-              style={[imageContainerStyles.fullscreen, animatedStyle]}
-              fadeDuration={0}
-            />
-          )}
+          <Animated.Image
+            resizeMode={"contain"}
+            style={[imageContainerStyles.fullscreen, animatedStyle]}
+            fadeDuration={0}
+            src={imageSrc}
+            source={imageSource}
+            onLoad={({ nativeEvent }) => {
+              const { width, height } = nativeEvent.source;
+              setDimensions({ width, height });
+            }}
+          />
         </Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
