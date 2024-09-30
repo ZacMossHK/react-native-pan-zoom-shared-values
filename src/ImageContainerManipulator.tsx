@@ -28,7 +28,7 @@ const ImageContainerManipulator = ({
   imageSource,
 }: ImageContainerManipulatorProps) => {
   // with thanks to https://github.com/software-mansion/react-native-gesture-handler/issues/2138#issuecomment-1231634779
-  
+
   const {
     origin,
     translation,
@@ -49,23 +49,25 @@ const ImageContainerManipulator = ({
       width: 0,
       height: 0,
     });
-  const [dimensions, setDimensions] = useState<SizeDimensions>({
+  const [imageDimensions, setImageDimensions] = useState<SizeDimensions>({
     width: 0,
     height: 0,
   });
 
   const imageHeight = viewportMeasurements.height
-    ? viewportMeasurements.width * (dimensions.height / dimensions.width)
+    ? viewportMeasurements.width *
+      (imageDimensions.height / imageDimensions.width)
     : 0;
 
   const imageWidth = viewportMeasurements.width
-    ? viewportMeasurements.height * (dimensions.width / dimensions.height)
+    ? viewportMeasurements.height *
+      (imageDimensions.width / imageDimensions.height)
     : 0;
 
   const isImageWiderThanView =
     viewportMeasurements.width &&
     viewportMeasurements.height &&
-    dimensions.width / dimensions.height >=
+    imageDimensions.width / imageDimensions.height >=
       viewportMeasurements.width / viewportMeasurements.height;
 
   const pinch = Gesture.Pinch()
@@ -208,7 +210,7 @@ const ImageContainerManipulator = ({
         // this resets the transform at the edge if trying to pan outside of the image's boundaries
         newMatrix[5] = maxDistance.value.y * (transform.value[5] > 0 ? 1 : -1);
       }
-      
+
       transform.value = newMatrix as unknown as Matrix3;
       return {}; // required to stop animatedStyle endlessly refreshing - possibly related to https://github.com/software-mansion/react-native-reanimated/issues/1767
     }
@@ -287,7 +289,7 @@ const ImageContainerManipulator = ({
             source={imageSource}
             onLoad={({ nativeEvent }) => {
               const { width, height } = nativeEvent.source;
-              setDimensions({ width, height });
+              setImageDimensions({ width, height });
             }}
           />
         </Animated.View>
