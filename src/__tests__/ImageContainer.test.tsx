@@ -23,7 +23,7 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-test("the pinch gesture zooms in and out", () => {
+const setUpImageContainerTests = () => {
   const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
   const animImage = getByTestId("animatedImage");
   fireEvent(animImage, "load", {
@@ -32,6 +32,11 @@ test("the pinch gesture zooms in and out", () => {
   fireEvent(getByTestId("animatedView"), "layout", {
     nativeEvent: { layout: { height: 400, width: 400 } },
   });
+  return { getByTestId, animImage };
+};
+
+test("the pinch gesture zooms in and out", () => {
+  const { animImage } = setUpImageContainerTests();
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
@@ -58,14 +63,7 @@ test("the pinch gesture zooms in and out", () => {
 });
 
 test("cannot zoom in more than the default scale value", () => {
-  const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
-  const animImage = getByTestId("animatedImage");
-  fireEvent(animImage, "load", {
-    nativeEvent: { source: { height: 400, width: 400 } },
-  });
-  fireEvent(getByTestId("animatedView"), "layout", {
-    nativeEvent: { layout: { height: 400, width: 400 } },
-  });
+  const { animImage } = setUpImageContainerTests();
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
@@ -80,14 +78,7 @@ test("cannot zoom in more than the default scale value", () => {
 });
 
 test("cannot zoom out past a scale value of 1", () => {
-  const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
-  const animImage = getByTestId("animatedImage");
-  fireEvent(animImage, "load", {
-    nativeEvent: { source: { height: 400, width: 400 } },
-  });
-  fireEvent(getByTestId("animatedView"), "layout", {
-    nativeEvent: { layout: { height: 400, width: 400 } },
-  });
+  const { animImage } = setUpImageContainerTests();
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
@@ -102,15 +93,7 @@ test("cannot zoom out past a scale value of 1", () => {
 });
 
 test("cannot pan while the image is at its base scale value", () => {
-  const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
-  const animImage = getByTestId("animatedImage");
-  fireEvent(animImage, "load", {
-    nativeEvent: { source: { height: 400, width: 400 } },
-  });
-  fireEvent(getByTestId("animatedView"), "layout", {
-    nativeEvent: { layout: { height: 400, width: 400 } },
-  });
-
+  const { animImage } = setUpImageContainerTests();
   fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
     {
       state: State.ACTIVE,
@@ -160,14 +143,7 @@ test("cannot pan while the image is at its base scale value", () => {
 });
 
 test("the image can pan once it is zoomed in", () => {
-  const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
-  const animImage = getByTestId("animatedImage");
-  fireEvent(animImage, "load", {
-    nativeEvent: { source: { height: 400, width: 400 } },
-  });
-  fireEvent(getByTestId("animatedView"), "layout", {
-    nativeEvent: { layout: { height: 400, width: 400 } },
-  });
+  const { animImage } = setUpImageContainerTests();
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
