@@ -8,7 +8,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { Matrix3, identity3, multiply3 } from "react-native-redash";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Coordinates,
   ImageContainerManipulatorProps,
