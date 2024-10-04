@@ -8,7 +8,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { Matrix3, identity3, multiply3 } from "react-native-redash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Coordinates,
   ImageContainerManipulatorProps,
@@ -122,10 +122,11 @@ const ImageContainerManipulator = ({
 
   const pan = Gesture.Pan()
     .averageTouches(true)
-    .onStart(() => {
+    .onStart((event) => {
       isPanning.value = true;
     })
     .onChange((event) => {
+      // console.log(event);
       const scaledOriginalMatrix = getMatrix(
         { x: 0, y: 0 },
         origin.value,
