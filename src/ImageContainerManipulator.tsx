@@ -188,7 +188,8 @@ const ImageContainerManipulator = ({
       adjustedTranslationX.value = 0;
       adjustedTranslationY.value = 0;
       isPanning.value = false;
-    });
+    })
+    .withTestId("pan");
 
   const animatedStyle = useAnimatedStyle(() => {
     if (
