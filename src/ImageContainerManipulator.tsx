@@ -117,7 +117,8 @@ const ImageContainerManipulator = ({
       baseScale.value *= pinchScale.value;
       pinchScale.value = 1;
       adjustedScale.value = 0;
-    });
+    })
+    .withTestId("pinch");
 
   const pan = Gesture.Pan()
     .averageTouches(true)
@@ -212,7 +213,7 @@ const ImageContainerManipulator = ({
       }
 
       transform.value = newMatrix as unknown as Matrix3;
-      return {}; // required to stop animatedStyle endlessly refreshing - possibly related to https://github.com/software-mansion/react-native-reanimated/issues/1767
+      // return {}; // required to stop animatedStyle endlessly refreshing - possibly related to https://github.com/software-mansion/react-native-reanimated/issues/1767
     }
 
     if (isImageWiderThanView) {
@@ -282,6 +283,7 @@ const ImageContainerManipulator = ({
           style={imageContainerStyles.fullscreen}
         >
           <Animated.Image
+            testID={"animatedImage"}
             resizeMode={"contain"}
             style={[imageContainerStyles.fullscreen, animatedStyle]}
             fadeDuration={0}
