@@ -1,4 +1,4 @@
-import { render, cleanup } from "@testing-library/react-native";
+import { render, cleanup, fireEvent } from "@testing-library/react-native";
 import ImageContainer from "..";
 import {
   getByGestureTestId,
@@ -26,6 +26,12 @@ afterEach(() => {
 test("the pinch gesture zooms in and out", () => {
   const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
   const animImage = getByTestId("animatedImage");
+  fireEvent(animImage, "load", {
+    nativeEvent: { source: { height: 400, width: 400 } },
+  });
+  fireEvent(getByTestId("animatedView"), "layout", {
+    nativeEvent: { layout: { height: 400, width: 400 } },
+  });
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
@@ -38,11 +44,13 @@ test("the pinch gesture zooms in and out", () => {
   expect(getAnimatedStyle(animImage).transform[2].scaleX).toBe(5);
   expect(getAnimatedStyle(animImage).transform[3].scaleY).toBe(5);
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
+    { state: State.BEGAN },
+    { focalY: 10 },
     {
       state: State.ACTIVE,
     },
     {
-      scale: -5,
+      scale: 0.2,
     },
   ]);
   expect(getAnimatedStyle(animImage).transform[2].scaleX).toBe(1);
@@ -52,6 +60,12 @@ test("the pinch gesture zooms in and out", () => {
 test("cannot zoom in more than the default scale value", () => {
   const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
   const animImage = getByTestId("animatedImage");
+  fireEvent(animImage, "load", {
+    nativeEvent: { source: { height: 400, width: 400 } },
+  });
+  fireEvent(getByTestId("animatedView"), "layout", {
+    nativeEvent: { layout: { height: 400, width: 400 } },
+  });
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
@@ -68,6 +82,12 @@ test("cannot zoom in more than the default scale value", () => {
 test("cannot zoom out past a scale value of 1", () => {
   const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
   const animImage = getByTestId("animatedImage");
+  fireEvent(animImage, "load", {
+    nativeEvent: { source: { height: 400, width: 400 } },
+  });
+  fireEvent(getByTestId("animatedView"), "layout", {
+    nativeEvent: { layout: { height: 400, width: 400 } },
+  });
   fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
     {
       state: State.ACTIVE,
@@ -84,6 +104,13 @@ test("cannot zoom out past a scale value of 1", () => {
 test("cannot pan while the image is at its base scale value", () => {
   const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
   const animImage = getByTestId("animatedImage");
+  fireEvent(animImage, "load", {
+    nativeEvent: { source: { height: 400, width: 400 } },
+  });
+  fireEvent(getByTestId("animatedView"), "layout", {
+    nativeEvent: { layout: { height: 400, width: 400 } },
+  });
+
   fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
     {
       state: State.ACTIVE,
@@ -130,4 +157,47 @@ test("cannot pan while the image is at its base scale value", () => {
   jest.advanceTimersByTime(1000);
   expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(0);
   expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(0);
+});
+
+test("the image can pan once it is zoomed in", () => {
+  const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
+  const animImage = getByTestId("animatedImage");
+  fireEvent(animImage, "load", {
+    nativeEvent: { source: { height: 400, width: 400 } },
+  });
+  fireEvent(getByTestId("animatedView"), "layout", {
+    nativeEvent: { layout: { height: 400, width: 400 } },
+  });
+  fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      scale: 2,
+    },
+  ]);
+  jest.advanceTimersByTime(1000);
+  fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      translationX: 100,
+    },
+  ]);
+  jest.advanceTimersByTime(1000);
+  expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(100);
+  expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(0);
+  fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      translationX: 0,
+      translationY: 100,
+    },
+  ]);
+  jest.advanceTimersByTime(1000);
+  expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(100);
+  expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(100);
 });

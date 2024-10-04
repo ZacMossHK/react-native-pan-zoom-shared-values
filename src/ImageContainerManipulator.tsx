@@ -276,6 +276,7 @@ const ImageContainerManipulator = ({
     <GestureHandlerRootView>
       <GestureDetector gesture={Gesture.Simultaneous(pinch, pan)}>
         <Animated.View
+          testID={"animatedView"}
           onLayout={({ nativeEvent }) => {
             const { height, width } = nativeEvent.layout;
             setViewportMeasurements({ height, width });
