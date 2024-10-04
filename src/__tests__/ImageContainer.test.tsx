@@ -396,3 +396,10 @@ describe("Using gestures", () => {
     expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(0);
   });
 });
+
+describe("ImageContainerProps", () => {
+  it("accepts an imageSrc", () => {
+    const { getByTestId } = render(<ImageContainer imageSrc={"abc.jpg"} />);
+    expect(getByTestId("animatedImage").props.src).toBe("abc.jpg");
+  });
+});
