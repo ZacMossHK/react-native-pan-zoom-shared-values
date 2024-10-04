@@ -341,3 +341,56 @@ test("an image can be panned immediately back when its panned beyond its lower b
   expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(0);
   expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(100);
 });
+
+test("an image can be panned back and forth going over both horizontal borders", () => {
+  const { animImage } = setUpImageContainerTests();
+  fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      scale: 2,
+    },
+  ]);
+  jest.advanceTimersByTime(1000);
+  fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      translationY: 800,
+      translationX: 0,
+    },
+    { translationY: -800, translationX: 0 },
+    { translationY: -700, translationX: 0 },
+  ]);
+  jest.advanceTimersByTime(1000);
+  expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(0);
+  expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-100);
+});
+
+test("an image can be panned back and forth going over both vertical borders", () => {
+  const { animImage } = setUpImageContainerTests();
+  fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      scale: 2,
+    },
+  ]);
+  jest.advanceTimersByTime(1000);
+  fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
+    {
+      state: State.ACTIVE,
+    },
+    {
+      translationX: 800,
+    },
+    { translationX: -800 },
+    { translationX: -700 },
+  ]);
+  jest.advanceTimersByTime(1000);
+  expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(-100);
+  expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(0);
+});
