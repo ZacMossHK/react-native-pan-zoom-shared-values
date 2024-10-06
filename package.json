@@ -4,7 +4,7 @@
   "description": "A pan and zoom gesture control package for React Native that allows a user to pass their own shared values as props",
   "main": "src/index.tsx",
   "scripts": {
-    "test": "test"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
