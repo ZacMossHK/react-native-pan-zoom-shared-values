@@ -27,10 +27,10 @@ const setUpImageContainerTests = () => {
   const { getByTestId } = render(<ImageContainer imageSrc={imageToAnimate} />);
   const animImage = getByTestId("animatedImage");
   fireEvent(animImage, "load", {
-    nativeEvent: { source: { height: 400, width: 400 } },
+    nativeEvent: { source: { height: 700, width: 400 } },
   });
   fireEvent(getByTestId("animatedView"), "layout", {
-    nativeEvent: { layout: { height: 400, width: 400 } },
+    nativeEvent: { layout: { height: 900, width: 400 } },
   });
   jest.advanceTimersByTime(1000);
   return { getByTestId, animImage };
@@ -247,7 +247,7 @@ describe("Using gestures", () => {
     ]);
     jest.advanceTimersByTime(1000);
     expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(-200);
-    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(200);
+    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(250);
     fireGestureHandler<PanGesture>(getByGestureTestId("pan"), [
       { state: State.BEGAN },
       { translationX: 0 },
@@ -258,7 +258,7 @@ describe("Using gestures", () => {
     ]);
     jest.advanceTimersByTime(1000);
     expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(-200);
-    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-200);
+    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-150);
   });
 
   it("an image can be panned immediately back when its panned beyond its left border", () => {
@@ -334,7 +334,7 @@ describe("Using gestures", () => {
     ]);
     jest.advanceTimersByTime(1000);
     expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(0);
-    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-100);
+    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-150);
   });
 
   it("an image can be panned immediately back when its panned beyond its lower border", () => {
@@ -360,7 +360,7 @@ describe("Using gestures", () => {
     ]);
     jest.advanceTimersByTime(1000);
     expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(0);
-    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(100);
+    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(150);
   });
 
   it("an image can be panned back and forth going over both horizontal borders", () => {
@@ -387,7 +387,7 @@ describe("Using gestures", () => {
     ]);
     jest.advanceTimersByTime(1000);
     expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(0);
-    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-100);
+    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(-150);
   });
 
   it("an image can be panned back and forth going over both vertical borders", () => {
