@@ -8,8 +8,8 @@ const ImageContainer = ({
   isUsingProvider,
 }: ImageContainerProps) => {
   const Manipulator = () => {
-    if (imageSource) return <ImageContainerManipulator {...{ imageSource }} />;
-    return <ImageContainerManipulator {...{ imageSrc }} />;
+    if (imageSrc) return <ImageContainerManipulator {...{ imageSrc }} />;
+    return <ImageContainerManipulator {...{ imageSource }} />;
   };
 
   return isUsingProvider ? (
