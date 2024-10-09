@@ -1,5 +1,5 @@
 # react-native-pan-zoom-shared-values
-#### A pan and zoom gesture control package for React Native that allows a user to access shared values from the pan and zoom animation.
+#### A pan and zoom gesture control package for React Native that allows a user to access shared values from the pan and zoom animation using a provider.
 
 ## Installation
 To install required dependencies:
