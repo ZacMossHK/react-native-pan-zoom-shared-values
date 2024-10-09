@@ -99,7 +99,6 @@ const ImageContainerManipulator = ({
       }
 
       const scaleChangeSinceStart = adjustedScale.value || event.scale;
-
       if (scaleChangeSinceStart * baseScale.value <= 1) {
         pinchScale.value = 1 / baseScale.value;
       } else if (scaleChangeSinceStart * baseScale.value >= 5) {
@@ -122,11 +121,10 @@ const ImageContainerManipulator = ({
 
   const pan = Gesture.Pan()
     .averageTouches(true)
-    .onStart((event) => {
+    .onStart(() => {
       isPanning.value = true;
     })
     .onChange((event) => {
-      // console.log(event);
       const scaledOriginalMatrix = getMatrix(
         { x: 0, y: 0 },
         origin.value,
@@ -252,7 +250,6 @@ const ImageContainerManipulator = ({
           2,
       };
     }
-
     return {
       transform: [
         {

@@ -32,6 +32,7 @@ const setUpImageContainerTests = () => {
   fireEvent(getByTestId("animatedView"), "layout", {
     nativeEvent: { layout: { height: 400, width: 400 } },
   });
+  jest.advanceTimersByTime(1000);
   return { getByTestId, animImage };
 };
 
@@ -91,6 +92,25 @@ describe("Using gestures", () => {
     jest.advanceTimersByTime(1000);
     expect(getAnimatedStyle(animImage).transform[2].scaleX).toBe(1);
     expect(getAnimatedStyle(animImage).transform[3].scaleY).toBe(1);
+  });
+
+  it("can zoom into points not in its centre", () => {
+    const { animImage } = setUpImageContainerTests();
+    fireGestureHandler<PinchGesture>(getByGestureTestId("pinch"), [
+      { state: State.BEGAN },
+      { focalX: 100, focalY: 100, scale: 1 },
+      {
+        state: State.ACTIVE,
+        focalX: 100,
+        focalY: 100,
+        scale: 2,
+      },
+    ]);
+    jest.advanceTimersByTime(1000);
+    expect(getAnimatedStyle(animImage).transform[0].translateX).toBe(-100);
+    expect(getAnimatedStyle(animImage).transform[1].translateY).toBe(0);
+    expect(getAnimatedStyle(animImage).transform[2].scaleX).toBe(2);
+    expect(getAnimatedStyle(animImage).transform[3].scaleY).toBe(2);
   });
 
   it("cannot pan while the image is at its base scale value", () => {
